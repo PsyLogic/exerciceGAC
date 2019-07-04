@@ -1,6 +1,5 @@
 <?php
-require_once('vendor/autoload.php');
-
+require_once('bootstrap.php');
 function CalcTime($times, $humain = false)
 {
 
@@ -22,7 +21,7 @@ function CalcTime($times, $humain = false)
         $h = floor(($all_seconds % 86400) / 3600);
         $d = floor(($all_seconds % 2592000) / 86400);
         $M = floor($all_seconds / 2592000);
-        return "$M months, $d days, $h hours, $m minutes, $s seconds";
+        return "$M mois, $d jours, $h heures, $m minutes, $s secondes";
     }
     $total_minutes = floor($all_seconds / 60);
     $seconds = $all_seconds % 60;
@@ -30,8 +29,6 @@ function CalcTime($times, $humain = false)
     $minutes = $total_minutes % 60;
     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 }
-
-$db = new MysqliDb('localhost', 'root', '', 'gac');
 
 // Get Total Call duration
 $db->where("DATE(date) >= '2012-02-15'");
@@ -41,5 +38,16 @@ $call_durations = array_map(function ($date) {
     return $date['duree_vlm_reel'];
 }, $call_durations);
 
-echo CalcTime($call_durations, true);
-die();
+
+// Get TOP 10
+$db->where("TYPE",'%connexion%','like');
+$db->where("heure between '08:00:00' AND '18:00:00'");
+$db->groupBy("n_abonne");
+$db->orderBy('TOTAL_VOLUME_FACTURE');
+$top10_abonne = $db->get('detail_appels',10,['n_abonne', 'sum(CAST(duree_vlm_fac as UNSIGNED)) AS TOTAL_VOLUME_FACTURE']);
+
+
+
+$db->where("TYPE",'%sms%','like');
+$sms_total = $db->get('detail_appels',1,['count(*) AS TOTAL_SMS'])[0];
+?>

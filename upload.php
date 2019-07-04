@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('vendor/autoload.php');
+require_once('bootstrap.php');
 $session_details = [];
 if (isset($_FILES['file'])) {
     $file_ext = explode('.', $_FILES['file']['name']);
@@ -15,9 +15,7 @@ if (isset($_FILES['file'])) {
         if (!move_uploaded_file($uploadedFile, $newdirFileName)) {
             $session_details = ['status' => "danger", 'message' => "Error while uploading the file"];
         } else {
-            $db = new MysqliDb('localhost', 'root', '', 'gac');
             $table = "detail_appels";
-
 
             $settings = array(
                 "fieldChar" => ';',

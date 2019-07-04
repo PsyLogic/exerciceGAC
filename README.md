@@ -2,7 +2,7 @@
 
 ##Installtion
 ```SHELL
-    git clone 
+    git clone git@github.com:PsyLogic/exerciceGAC.git
     cd exerciceGac
     composer install
 ```
